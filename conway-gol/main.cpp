@@ -55,17 +55,54 @@ void updateDraft(int line, const std::string &newText)
     std::cout << std::endl;  // Move to the next line
 }
 
-int main()
+const int GAME_STATE_SETUP = 0;
+const int GAME_STATE_RUNNING = 1;
+
+int gameState = GAME_STATE_SETUP;
+
+const uint8_t GRID_X = 32;
+const uint8_t GRID_Y = 16;
+
+using Grid = int8_t[GRID_X][GRID_Y];
+// using Screen = char[GRID_X][GRID_Y];
+typedef char Screen[GRID_X][GRID_Y];
+
+void redrawScreen(Screen &screen)
 {
-    set_raw_mode(); // Set terminal to raw mode
+    clearScreen();
+    for (int x = 0; x < GRID_X; x++)
+    {
+        std::string line = "";
+        for (int y = 0; y < GRID_Y; y++)
+        {
+            line += screen[x][y];
+        }
+        std::cout << line << std::endl
+                  << "\r";
+    }
+}
 
-    std::cout << "Press any key to continue (press 'q' to quit): " << std::endl
-              << "\r";
+void setupGame(Grid &grid)
+{
+    Screen screen;
+    for (auto &row : screen)
+    {
+        for (auto &cell : row)
+        {
+            cell = ' ';
+        }
+    }
+    // char screen[GRID_X][GRID_Y];
 
+    // std::fill(screen.begin(), screen.end(), ' ');
+
+    redrawScreen(screen);
     while (true)
     {
-        clearScreen(); // Clear the screen
+        // clearScreen(); // Clear the screen
+
         char c = read_char();
+        redrawScreen(screen);
         std::cout << "You pressed: " << c << std::endl
                   << "\r";
 
@@ -74,11 +111,41 @@ int main()
             break;
         }
     }
+}
 
-    reset_terminal(); // Restore terminal settings
-    std::cout << "Terminal reset." << std::endl;
+int main()
+{
+    Grid grid;
+    set_raw_mode();
+    setupGame(grid);
+    reset_terminal();
     return 0;
 }
+
+// int main()
+// {
+//     set_raw_mode(); // Set terminal to raw mode
+
+//     std::cout << "Press any key to continue (press 'q' to quit): " << std::endl
+//               << "\r";
+
+//     while (true)
+//     {
+//         clearScreen(); // Clear the screen
+//         char c = read_char();
+//         std::cout << "You pressed: " << c << std::endl
+//                   << "\r";
+
+//         if (c == 'q')
+//         {
+//             break;
+//         }
+//     }
+
+//     reset_terminal(); // Restore terminal settings
+//     std::cout << "Terminal reset." << std::endl;
+//     return 0;
+// }
 
 // int main()
 // {
