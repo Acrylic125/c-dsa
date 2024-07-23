@@ -2,6 +2,30 @@
 #include <unistd.h> // for sleep()
 #include <chrono>
 #include <thread>
+#include <ncurses.h>
+#include <termios.h>
+
+struct termios oldt, newt;
+
+void set_raw_mode()
+{
+    tcgetattr(STDIN_FILENO, &oldt); // Get the current terminal attributes
+    newt = oldt;
+    cfmakeraw(&newt);                        // Set the terminal to raw mode
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt); // Apply the new attributes
+}
+
+void reset_terminal()
+{
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt); // Restore old terminal attributes
+}
+
+char read_char()
+{
+    char c;
+    read(STDIN_FILENO, &c, 1);
+    return c;
+}
 
 void clearScreen()
 {
@@ -33,19 +57,61 @@ void updateDraft(int line, const std::string &newText)
 
 int main()
 {
-    showDrafts();
-    int count = 0;
+    set_raw_mode(); // Set terminal to raw mode
+
+    std::cout << "Press any key to continue (press 'q' to quit): " << std::endl
+              << "\r";
+
     while (true)
     {
-        // clearScreen();
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        clearScreen(); // Clear the screen
+        char c = read_char();
+        std::cout << "You pressed: " << c << std::endl
+                  << "\r";
 
-        updateDraft(count % 4 + 1, "Hello " + std::to_string(count));
-        count++;
+        if (c == 'q')
+        {
+            break;
+        }
     }
 
+    reset_terminal(); // Restore terminal settings
+    std::cout << "Terminal reset." << std::endl;
     return 0;
 }
+
+// int main()
+// {
+//     showDrafts();
+//     // int count = 0;
+//     // while (true)
+//     // {
+
+//     //     // clearScreen();
+//     //     std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+//     //     updateDraft(count % 4 + 1, "Hello \u2587\u2587\u2587\u2587" + std::to_string(count));
+//     //     moveCursor(2, 4);
+//     //     count++;
+//     // }
+//     // initscr();
+//     // noecho();
+//     // cbreak();
+
+//     char c = getch();
+//     std::cout << c;
+//     // int ch;
+//     // while ((ch = getch()) != 'q')
+//     // {
+//     //     if (ch == 'a')
+//     //     {
+//     //         std::cout << "a key pressed!" << std::endl;
+//     //     }
+//     //     // Check for other keys as needed
+//     // }
+
+//     return 0;
+// }
 
 // #include <iostream>
 
