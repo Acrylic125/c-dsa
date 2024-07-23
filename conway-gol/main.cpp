@@ -92,15 +92,10 @@ void setupGame(Grid &grid)
             cell = ' ';
         }
     }
-    // char screen[GRID_X][GRID_Y];
-
-    // std::fill(screen.begin(), screen.end(), ' ');
 
     redrawScreen(screen);
     while (true)
     {
-        // clearScreen(); // Clear the screen
-
         char c = read_char();
         redrawScreen(screen);
         std::cout << "You pressed: " << c << std::endl
@@ -121,83 +116,3 @@ int main()
     reset_terminal();
     return 0;
 }
-
-// int main()
-// {
-//     set_raw_mode(); // Set terminal to raw mode
-
-//     std::cout << "Press any key to continue (press 'q' to quit): " << std::endl
-//               << "\r";
-
-//     while (true)
-//     {
-//         clearScreen(); // Clear the screen
-//         char c = read_char();
-//         std::cout << "You pressed: " << c << std::endl
-//                   << "\r";
-
-//         if (c == 'q')
-//         {
-//             break;
-//         }
-//     }
-
-//     reset_terminal(); // Restore terminal settings
-//     std::cout << "Terminal reset." << std::endl;
-//     return 0;
-// }
-
-// int main()
-// {
-//     showDrafts();
-//     // int count = 0;
-//     // while (true)
-//     // {
-
-//     //     // clearScreen();
-//     //     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
-//     //     updateDraft(count % 4 + 1, "Hello \u2587\u2587\u2587\u2587" + std::to_string(count));
-//     //     moveCursor(2, 4);
-//     //     count++;
-//     // }
-//     // initscr();
-//     // noecho();
-//     // cbreak();
-
-//     char c = getch();
-//     std::cout << c;
-//     // int ch;
-//     // while ((ch = getch()) != 'q')
-//     // {
-//     //     if (ch == 'a')
-//     //     {
-//     //         std::cout << "a key pressed!" << std::endl;
-//     //     }
-//     //     // Check for other keys as needed
-//     // }
-
-//     return 0;
-// }
-
-// #include <iostream>
-
-// using namespace std;
-
-// const uint8_t GRID_X = 64;
-// const uint8_t GRID_Y = 64;
-
-// const uint8_t DEAD = 0;
-// const uint8_t ALIVE = 1;
-
-// int main()
-// {
-//     uint8_t grid[GRID_X][GRID_Y];
-//     // for (int x = 0; x < GRID_X; x++)
-//     // {
-//     // }
-//     std::cout << "Test: " << std::begin(grid) << std::endl;
-//     std::cout << "Hello 1";
-//     std::cout << "\r\rHello 2";
-//     return 0;
-// }
