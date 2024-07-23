@@ -60,51 +60,113 @@ const int GAME_STATE_RUNNING = 1;
 
 int gameState = GAME_STATE_SETUP;
 
-const uint8_t GRID_X = 32;
+const uint8_t GRID_X = 16;
 const uint8_t GRID_Y = 16;
 
 using Grid = int8_t[GRID_X][GRID_Y];
-// using Screen = char[GRID_X][GRID_Y];
 typedef char Screen[GRID_X][GRID_Y];
 
-void redrawScreen(Screen &screen)
+typedef uint8_t Pos[2];
+
+void redrawScreen(Screen &screen, Pos &cursor)
 {
+    // const int screenWidth = sizeof(screen) / sizeof(screen[0]);
+    // const int screenHeight = sizeof(screen[0]) / sizeof(screen[0][0]);
+    const int screenWidth = GRID_X;
+    const int screenHeight = GRID_Y;
     clearScreen();
-    for (int x = 0; x < GRID_X; x++)
+    for (int y = 0; y < screenHeight; y++)
     {
         std::string line = "";
-        for (int y = 0; y < GRID_Y; y++)
+        for (int x = 0; x < screenWidth; x++)
         {
-            line += screen[x][y];
+            if (x == cursor[1] && y == cursor[0])
+            {
+                char v = screen[x][y];
+                std::string a = std::string(1, v);
+                std::string s = "\033[33m" + a + "\033[0m";
+                line += s;
+                // line += "A";
+            }
+            else
+            {
+                line += screen[x][y];
+            }
         }
         std::cout << line << std::endl
                   << "\r";
     }
 }
 
+int positive_modulo(int i, int n)
+{
+    return (i % n + n) % n;
+}
+
 void setupGame(Grid &grid)
 {
     Screen screen;
-    for (auto &row : screen)
+
+    const int screenHeight = sizeof(screen) / sizeof(screen[0]);
+    const int screenWidth = sizeof(screen[0]) / sizeof(screen[0][0]);
+
+    for (int y = 0; y < screenHeight; y++)
     {
-        for (auto &cell : row)
+        for (int x = 0; x < screenWidth; x++)
         {
-            cell = ' ';
+            screen[y][x] = ' ';
         }
     }
 
-    redrawScreen(screen);
+    screen[2][0] = '@';
+    Pos cursor = {0, 0};
+    redrawScreen(screen, cursor);
+
+    int cursorX, cursorY;
+
     while (true)
     {
         char c = read_char();
-        redrawScreen(screen);
-        std::cout << "You pressed: " << c << std::endl
-                  << "\r";
 
         if (c == 'q')
         {
             break;
         }
+        switch (c)
+        {
+        case 'w':
+            cursorX--;
+            break;
+        case 'a':
+            cursorY--;
+            break;
+        case 's':
+            cursorX++;
+            break;
+        case 'd':
+            cursorY++;
+            break;
+        default:
+            break;
+        }
+
+        // std::cout << "You pressed: " << c << std::endl
+        //           << "\r";
+
+        // std::cout << "Before Cursor: " << cursorX << ", " << cursorY << std::endl
+        //           << "\r";
+
+        // cursorX = cursorX % screenWidth;
+        // cursorY = cursorY % screenHeight;
+        cursorX = positive_modulo(cursorX, screenWidth);
+        cursorY = positive_modulo(cursorY, screenHeight);
+        screen[cursorY][cursorX] = '@';
+
+        Pos cursor = {cursorX, cursorY};
+        redrawScreen(screen, cursor);
+        std::cout << "Cursor: " << cursorX << ", " << cursorY << std::endl
+                  << "Screen: " << screenWidth << ", " << screenHeight << std::endl
+                  << "\r";
     }
 }
 
